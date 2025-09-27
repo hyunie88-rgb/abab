@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-  <!-- 홈화면 아이콘 -->
+  <!-- 홈화면 아이콘 (앱처럼 추가 시 보이는 아이콘) -->
   <link rel="apple-touch-icon" href="IMG_7061.png">
   <link rel="icon" sizes="192x192" href="IMG_7061.png">
 
@@ -16,146 +16,165 @@
   <meta name="apple-mobile-web-app-title" content="우리WON뱅킹">
   <meta name="application-name" content="우리WON뱅킹">
 
+  <!-- Pretendard CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fonts-archive/Pretendard/Pretendard.css">
+
   <title>우리WON뱅킹</title>
-</head>
-  
-  <title>거래내역조회</title>
+
   <style>
+    /* 전체 페이지 공통 스타일 */
     body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #fff;
-  color: #000;
+      margin: 0;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #fff;
+      color: #000;
 
-  /* 하단 홈바 safe-area 대응 */
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  padding-left: env(safe-area-inset-left, 0px);
-  padding-right: env(safe-area-inset-right, 0px);
-}
+      /* iOS 하단 홈바 영역 피해서 레이아웃 잡기 */
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      padding-left: env(safe-area-inset-left, 0px);
+      padding-right: env(safe-area-inset-right, 0px);
+    }
 
-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 17px;
-  font-weight: 500;
-  background: #fff;
-  position: sticky;
-  top: 0;
-  z-index: 200;
+    /* 상단 헤더 (뒤로가기, 제목, 설정 버튼) */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 17px;
+      font-weight: 500;
+      background: #fff;
+      position: sticky;   /* 스크롤 내려도 상단에 고정 */
+      top: 0;
+      z-index: 200;
 
-  /* safe-area 상단 보정 */
-  padding: calc(env(safe-area-inset-top, 0px) + 12px) 16px 12px 16px;
+      /* safe-area 상단 보정 (노치 대응) */
+      padding: calc(env(safe-area-inset-top, 0px) + 12px) 16px 12px 16px;
 
-  height: auto;
-  box-sizing: border-box;
+      height: auto;
+      box-sizing: border-box;
 
-  /* header 높이를 변수로 저장 → filter-bar에서 사용 */
-  --header-height: calc(env(safe-area-inset-top, 0px) + 12px + 17px + 12px);
-}
+      /* header 높이를 변수로 저장 → filter-bar 위치 조정에 사용 */
+      --header-height: calc(env(safe-area-inset-top, 0px) + 12px + 17px + 12px);
+    }
 
-.account {
-  padding: 16px;
-  border-bottom: 8px solid #f5f5f5;
-}
-.account-left { font-size: 15px; font-weight: 600; }
-.account-left .sub { font-size: 13px; color: #999; margin-top: 4px; }
-.account-right { text-align: right; margin-top: 8px; }
-.account-right .balance { font-size: 25px; font-weight: 700; color: #111; }
-.account-right .sub-text { font-size: 14px; color: #888888; margin-top: 8px; margin-bottom: 20px; }
-.transfer-btn {
-  margin-top: 10px;
-  background: #2684ff;
-  color: #fff;
-  text-align: center;
-  padding: 16px 0;
-  border-radius: 6px;
-  font-size: 16px;
-  font-weight: 600;
-}
+    /* 계좌 영역 (계좌번호, 잔액 표시) */
+    .account {
+      padding: 16px;
+      border-bottom: 8px solid #f5f5f5; /* 아래 회색 구분선 */
+    }
+    .account-left { font-size: 15px; font-weight: 600; }
+    .account-left .sub { font-size: 13px; color: #999; margin-top: 4px; }
+    .account-right { text-align: right; margin-top: 8px; }
+    .account-right .balance { font-size: 25px; font-weight: 700; color: #33393f; }
+    .account-right .sub-text { font-size: 14px; color: #8e959e; margin-top: 8px; margin-bottom: 20px; font-weight:500;}
+    .transfer-btn {
+      margin-top: 10px;
+      background: #2684ff;
+      color: #fff;
+      text-align: center;
+      padding: 16px 0;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+    }
 
-/* 기존 filter-bar 에서 top 제거 */
-.filter-bar {
-  position: sticky;
-  z-index: 50;
-  background: #fff;
-  margin: 0;
-  padding: 16px 16px 2px;
-  font-size: 14px;
-  color: #333;
-}
-.filter-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.filter-left { display: flex; align-items: center; gap: 6px; color: #333; }
-.filter-right { color: #444; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+    /* 거래내역 필터바 */
+    .filter-bar {
+      position: sticky;   /* 스크롤 내려도 고정 */
+      z-index: 50;
+      background: #fff;
+      margin: 0;
+      padding: 16px 16px 2px;
+      font-size: 14px;
+      color: #333;
+    }
+    .filter-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .filter-left { display: flex; align-items: center; gap: 6px; color: #333; }
+    .filter-right { color: #444; font-size: 13px; display: flex; align-items: center; gap: 6px; }
 
-.switch { position: relative; display: inline-block; width: 40px; height: 22px; }
-.switch input { opacity: 0; width: 0; height: 0; }
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: #ccc;
-  transition: .4s;
-  border-radius: 22px;
-}
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 18px;
-  width: 18px;
-  left: 2px;
-  bottom: 2px;
-  background-color: white;
-  transition: .4s;
-  border-radius: 50%;
-}
-.switch input:checked + .slider { background-color: #2684ff; }
-.switch input:checked + .slider:before { transform: translateX(18px); }
+    /* 잔액 ON/OFF 스위치 */
+    .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 22px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    .switch input:checked + .slider { background-color: #2684ff; }
+    .switch input:checked + .slider:before { transform: translateX(18px); }
 
-.toggle-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  font-size: 14px;
-  color: #000;
-}
+    /* 필터바 안에 잔액 토글 + 텍스트 정렬 */
+    .toggle-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      font-size: 14px;
+      color: #33393f;
+    }
 
-.summary-wrapper {
-  margin-top: 0px;
-  padding: 12px 16px;
-  margin-bottom: 8px;
+    /* 기간 내 합계 영역 전체 (회색 박스 + 밑줄 포함) */
+    .summary-wrapper {
+      margin: 0 16px 8px;       /* 좌우 리스트 폭 맞추기 */
+      padding-bottom: 12px;     /* 회색 박스와 밑줄 사이 간격 */
+      border-bottom: 1px solid #eee; /* 밑에 얇은 구분선 */
+    }
 
-  /* 기존 전체 폭 줄 → 리스트 텍스트 폭 맞춤 */
-  border-bottom: 1px solid #eee;
-  margin-left: 16px;
-  margin-right: 16px;
-}
-.summary {
-  background: #f5f5f5;
-  color: #333;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  border-radius: 6px;
-  font-size: 15px;
-  font-weight: 500;
-}
-.month-header { padding: 12px 16px; font-size: 16px; font-weight: 600; background: #fff; }
-.history { list-style: none; margin: 0; padding: 0; }
-.history li { padding: 14px 16px; }
-.history .time { font-size: 14px; color: #888888; margin-bottom: 6px; }
-.history .top-row { display: flex; justify-content: space-between; align-items: center; }
-.history .title { font-size: 15px; color: #000; font-weight: 500; }
-.history .amount { font-size: 15px; font-weight: 600; }
-.history .amount.plus { color: #2684ff; }
-.history .amount.minus { color: #000; }
-.history .balance { font-size: 14px; color: #666666; margin-top: 2px; }
-.date-divider {
-  border-top: 1px solid #eee;
-  margin: 8px 16px; /* 위아래 8px, 좌우 16px */
-  height: 0;}</style>
+    /* 실제 합계 회색 박스 */
+    .summary {
+      background: #f9f9f9;
+      color: #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    /* 월 헤더 (예: "2025년 9월") */
+    .month-header { 
+      padding: 12px 16px; 
+      font-size: 16px; color: #33393f ;
+      font-weight: 600; 
+      background: #fff; 
+    }
+
+    /* 거래내역 리스트 */
+    .history { list-style: none; margin: 0; padding: 0; }
+    .history li { padding: 14px 16px; } /* 거래 한 건 단위 */
+
+    /* 거래내역 내 상세 스타일 */
+    .history .time { font-size: 14px; color: #6c737a; margin-bottom: 6px; font-weight: 500;} /* 거래 시간 */
+    .history .top-row { display: flex; justify-content: space-between; align-items: center; }
+    .history .title { font-size: 15px; color: #33393f; font-weight: 500; } /* 상대 이름 */
+    .history .amount { font-size: 15px; font-weight: 600; }             /* 금액 */
+    .history .amount.plus { color: #2684ff; }  /* 입금 파란색 */
+    .history .amount.minus { color: #33393f; }    /* 출금 검정색 */
+    .history .balance { font-size: 14px; color: #6c737a; font-weight: 500;margin-top: 2px; } /* 잔액 */
+
+    /* 날짜 구분선 (날짜 바뀔 때마다 삽입됨) */
+    .date-divider {
+      border-top: 1px solid #eee;
+      margin: 14px 16px;
+      height: 0;
+    }
+  </style>
 </head>
 <body>
 <header><span>
@@ -198,7 +217,6 @@ header {
     <span>▼</span>
   </div>
 </div>
-<div class="month-header">2025년 9월</div>
 <ul class="history">
 <li>
   <div class="time">9월 26일 · 17:48:12</div>
@@ -245,7 +263,6 @@ header {
   <div class="top-row"><div class="title">우체김영재</div><div class="amount minus">-5,200원</div></div>
   <div class="balance" style="text-align:right;">잔액 5,307,447원</div>
 </li>
-<li class="date-divider"></li>
 <li>
   <div class="time">9월 22일 · 17:47:43</div>
   <div class="top-row"><div class="title">이미현</div><div class="amount plus">+5,500원</div></div>
@@ -256,7 +273,6 @@ header {
   <div class="top-row"><div class="title">김계영</div><div class="amount plus">+88,000원</div></div>
   <div class="balance" style="text-align:right;">잔액 5,307,147원</div>
 </li>
-<li class="date-divider"></li>
 <li>
   <div class="time">9월 20일 · 09:27:26</div>
   <div class="top-row"><div class="title">예금결산이자</div><div class="amount plus">+505원</div></div>
@@ -277,7 +293,7 @@ header {
   <div class="top-row"><div class="title">우체김영재</div><div class="amount minus">-2,600원</div></div>
   <div class="balance" style="text-align:right;">잔액 5,098,642원</div>
 </li>
-<li class="date-divider"></li>
+
 <li>
   <div class="time">9월 18일 · 17:39:31</div>
   <div class="top-row"><div class="title">김계영</div><div class="amount plus">+111,730원</div></div>
@@ -298,7 +314,7 @@ header {
   <div class="top-row"><div class="title">김계영</div><div class="amount plus">+88,000원</div></div>
   <div class="balance" style="text-align:right;">잔액 4,813,512원</div>
 </li>
-<li class="date-divider"></li>
+
 <li>
   <div class="time">9월 12일 · 23:10:12</div>
   <div class="top-row"><div class="title">김계영</div><div class="amount plus">+143,100원</div></div>
@@ -800,20 +816,83 @@ header {
   <div class="balance" style="text-align:right;">잔액 1,925,932원</div>
 </li>
   <!-- 내용 끝 -->
-
-  <script>
-    function updateFilterBarOffset() {
-      const header = document.querySelector("header");
-      const filterBar = document.querySelector(".filter-bar");
-      if (header && filterBar) {
-        const headerHeight = header.offsetHeight;
-        filterBar.style.top = headerHeight + "px";
-      }
+<script>
+  // 🔹 헤더 높이에 맞춰 filter-bar 위치 보정 함수
+  function updateFilterBarOffset() {
+    const header = document.querySelector("header");        // 상단 고정 header 요소
+    const filterBar = document.querySelector(".filter-bar"); // 필터바 요소
+    if (header && filterBar) {
+      const headerHeight = header.offsetHeight;             // header 실제 높이 계산
+      filterBar.style.top = headerHeight + "px";            // filter-bar를 header 바로 밑에 위치시킴
     }
+  }
 
-    window.addEventListener("load", updateFilterBarOffset);
-    window.addEventListener("resize", updateFilterBarOffset);
-  </script>
+  // 페이지 로드 완료 후 filter-bar 위치 계산
+  window.addEventListener("load", updateFilterBarOffset);
+
+  // 화면 크기 변경될 때 (회전 등) 다시 계산
+  window.addEventListener("resize", updateFilterBarOffset);
+
+
+
+  // 🔹 거래내역 리스트에 자동으로 월 헤더 + 날짜 구분선 추가
+  document.addEventListener("DOMContentLoaded", () => {
+    const historyList = document.querySelector(".history");          // 거래내역 리스트 (ul.history)
+    const items = [...historyList.querySelectorAll("li")];           // 모든 거래내역 항목들
+
+    let prevMonth = "";  // 이전 항목의 월 (비교용)
+    let prevDate = "";   // 이전 항목의 날짜 (비교용)
+
+    items.forEach((li, index) => {
+      const timeEl = li.querySelector(".time"); // 각 거래 내역의 시간 요소
+      if (!timeEl) return;                      // 시간 요소가 없으면 패스
+
+      // 예: "9월 26일 · 08:33:13" → "9월 26일"
+      const dateText = timeEl.textContent.split("·")[0].trim();
+
+      // "9월 26일" → ["9월","26일"]
+      const [monthPart, dayPart] = dateText.split(" ");
+
+      // 현재 연도 (실제 서비스에서는 거래 데이터의 연도를 가져오는게 맞음)
+      const year = new Date().getFullYear();
+
+      // 월 헤더 텍스트 (예: "2025년 9월")
+      const monthHeaderText = `${year}년 ${monthPart}`;
+
+      // 날짜 구분선 텍스트 (예: "9월 26일") → 화면에는 라인만 보이고 실제 텍스트는 사용 안 함
+      const dateDividerText = `${monthPart} ${dayPart}`;
+
+
+      // ✅ 첫 거래이거나, 월이 바뀔 때
+      if (prevMonth !== monthHeaderText) {
+        // 새로운 월 헤더 생성
+        const header = document.createElement("div");
+        header.className = "month-header";
+        header.textContent = monthHeaderText;
+        historyList.insertBefore(header, li);   // 현재 거래 앞에 삽입
+
+        // 첫 거래가 아닐 경우 → 월 헤더 앞에 구분선도 추가
+        if (index !== 0) {
+          const divider = document.createElement("div");
+          divider.className = "date-divider";
+          historyList.insertBefore(divider, header);
+        }
+      }
+
+      // ✅ 같은 월 안에서 날짜만 바뀔 때
+      else if (prevDate && prevDate !== dateDividerText) {
+        // 날짜가 달라졌으니 구분선 추가
+        const divider = document.createElement("div");
+        divider.className = "date-divider";
+        historyList.insertBefore(divider, li);
+      }
+
+      // 비교용 데이터 갱신
+      prevMonth = monthHeaderText;
+      prevDate = dateDividerText;
+    });
+  });
+</script>
 </body>
 </html>
 
